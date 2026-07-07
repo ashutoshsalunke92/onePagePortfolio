@@ -31,3 +31,7 @@ Just open `index.html` in a browser — no build tools or dependencies needed.
 - Colors and fonts live at the top of `style.css` under `:root`.
 - To swap the resume file, replace `Ashutosh_Salunke_Resume.pdf` and keep the same filename, or update the two `href` references in `index.html`.
 - The contact form has no backend — submitting it opens the visitor's email client pre-filled with their message (via a `mailto:` link). To capture messages directly, hook the form up to a service like Formspree or Netlify Forms.
+
+## Changelog (this update)
+- Removed the mouse-follow glow cursor effect (was `.glow-cursor` in `style.css`, the matching `<div id="glowCursor">` in `index.html`, and the "CURSOR GLOW" mousemove/mouseleave listeners in `script.js`).
+- Verified the layout, section order, spacing, and card grids against the provided theme reference — no content was changed, only the cursor-glow removal above.

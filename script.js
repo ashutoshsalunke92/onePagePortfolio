@@ -80,21 +80,6 @@ const statObserver = new IntersectionObserver((entries) => {
 
 statNums.forEach(el => statObserver.observe(el));
 
-// ============ CURSOR GLOW (desktop only) ============
-const glowCursor = document.getElementById('glowCursor');
-let glowActive = false;
-
-if (window.matchMedia('(pointer: fine)').matches) {
-  window.addEventListener('mousemove', (e) => {
-    glowCursor.style.opacity = '1';
-    glowCursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%, -50%)`;
-    glowActive = true;
-  });
-  window.addEventListener('mouseleave', () => {
-    glowCursor.style.opacity = '0';
-  });
-}
-
 // ============ HERO PARALLAX ============
 const orb1 = document.querySelector('.orb-1');
 const orb2 = document.querySelector('.orb-2');
