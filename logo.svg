@@ -1,0 +1,22 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34e5a4"/>
+      <stop offset="100%" stop-color="#1f9a72"/>
+    </linearGradient>
+  </defs>
+
+  <!-- badge background -->
+  <rect x="1" y="1" width="62" height="62" rx="16" fill="#0d1117" stroke="url(#badgeGrad)" stroke-width="1.5"/>
+
+  <!-- monogram A, built from two strokes so we can open a node gap in the crossbar -->
+  <g fill="none" stroke="url(#badgeGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 46 L31.5 16"/>
+    <path d="M46 46 L32.5 16"/>
+    <path d="M23.5 34 L28.5 34"/>
+    <path d="M35.5 34 L40.5 34"/>
+  </g>
+
+  <!-- workflow node sitting in the crossbar gap, nodding to flow/automation work -->
+  <circle cx="32" cy="34" r="3.6" fill="#04140e" stroke="#34e5a4" stroke-width="2"/>
+</svg>
