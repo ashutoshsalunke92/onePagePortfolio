@@ -32,21 +32,45 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ---------- Scroll Reveal ----------
+  // NOTE: styles are applied inline via JS (not relying on a specific CSS
+  // class contract) so this can't silently break if style.css changes.
   const revealEls = document.querySelectorAll('.reveal');
+
+  revealEls.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  });
+
+  function showEl(el) {
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0)';
+    el.classList.add('is-visible'); // kept too, in case CSS also hooks into it
+  }
+
   if (revealEls.length && 'IntersectionObserver' in window) {
     const revealObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
+          showEl(entry.target);
           revealObserver.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
     revealEls.forEach(el => revealObserver.observe(el));
+
+    // Safety net: if anything is still hidden 1.5s after load (e.g. an
+    // element that never intersects, like content below a very tall page),
+    // reveal it anyway so nothing stays permanently invisible.
+    setTimeout(() => {
+      revealEls.forEach(el => {
+        if (el.style.opacity !== '1') showEl(el);
+      });
+    }, 1500);
   } else {
     // Fallback: just show everything if IntersectionObserver isn't supported
-    revealEls.forEach(el => el.classList.add('is-visible'));
+    revealEls.forEach(showEl);
   }
 
   // ---------- Animated Stat Counters ----------
