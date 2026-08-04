@@ -1,111 +1,158 @@
-// ============ NAV: scroll state + mobile toggle + active link ============
-const nav = document.getElementById('nav');
-const navToggle = document.getElementById('navToggle');
-const navLinks = document.getElementById('navLinks');
+// ============================================================
+// Ashutosh Salunke — Portfolio Interactions
+// ============================================================
 
-window.addEventListener('scroll', () => {
-  nav.classList.toggle('scrolled', window.scrollY > 20);
-}, { passive: true });
+document.addEventListener('DOMContentLoaded', () => {
 
-navToggle.addEventListener('click', () => {
-  navLinks.classList.toggle('open');
-});
+  // ---------- Mobile Nav Toggle ----------
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
 
-navLinks.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => navLinks.classList.remove('open'));
-});
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('is-open');
+      navToggle.classList.toggle('is-active');
+    });
 
-// Highlight active nav link based on section in view
-const sections = document.querySelectorAll('main section[id]');
-const navAnchors = document.querySelectorAll('.nav-links a[data-nav]');
-
-const navObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const id = entry.target.getAttribute('id');
-      navAnchors.forEach(a => {
-        a.classList.toggle('active', a.getAttribute('href') === `#${id}`);
+    // Close mobile menu after clicking a link
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('is-open');
+        navToggle.classList.remove('is-active');
       });
-    }
-  });
-}, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
-
-sections.forEach(s => navObserver.observe(s));
-
-// ============ SCROLL REVEAL ANIMATIONS ============
-const revealEls = document.querySelectorAll('.reveal');
-
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach((entry, i) => {
-    if (entry.isIntersecting) {
-      const el = entry.target;
-      const delay = (Array.from(revealEls).indexOf(el) % 6) * 60;
-      setTimeout(() => el.classList.add('in-view'), delay);
-      revealObserver.unobserve(el);
-    }
-  });
-}, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
-
-revealEls.forEach(el => revealObserver.observe(el));
-
-// ============ ANIMATED STAT COUNTERS ============
-const statNums = document.querySelectorAll('.stat-num');
-
-function animateCount(el) {
-  const target = parseInt(el.dataset.count, 10);
-  const duration = 1200;
-  const start = performance.now();
-
-  function tick(now) {
-    const progress = Math.min((now - start) / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    el.textContent = Math.floor(eased * target);
-    if (progress < 1) {
-      requestAnimationFrame(tick);
-    } else {
-      el.textContent = target;
-    }
+    });
   }
-  requestAnimationFrame(tick);
-}
 
-const statObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      animateCount(entry.target);
-      statObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.5 });
-
-statNums.forEach(el => statObserver.observe(el));
-
-// ============ HERO PARALLAX ============
-const orb1 = document.querySelector('.orb-1');
-const orb2 = document.querySelector('.orb-2');
-
-window.addEventListener('scroll', () => {
-  const y = window.scrollY;
-  if (y < window.innerHeight) {
-    if (orb1) orb1.style.transform = `translateY(${y * 0.15}px)`;
-    if (orb2) orb2.style.transform = `translateY(${y * -0.1}px)`;
+  // ---------- Nav background on scroll ----------
+  const nav = document.getElementById('nav');
+  if (nav) {
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('is-scrolled', window.scrollY > 20);
+    });
   }
-}, { passive: true });
 
-// ============ CONTACT FORM (mailto handoff — static site, no backend) ============
-const contactForm = document.getElementById('contactForm');
-const formNote = document.getElementById('formNote');
+  // ---------- Scroll Reveal ----------
+  const revealEls = document.querySelectorAll('.reveal');
+  if (revealEls.length && 'IntersectionObserver' in window) {
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
 
-contactForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const name = document.getElementById('name').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const subject = document.getElementById('subject').value.trim();
-  const message = document.getElementById('message').value.trim();
+    revealEls.forEach(el => revealObserver.observe(el));
+  } else {
+    // Fallback: just show everything if IntersectionObserver isn't supported
+    revealEls.forEach(el => el.classList.add('is-visible'));
+  }
 
-  const body = `Name: ${name}\nEmail: ${email}\n\n${message}`;
-  const mailto = `mailto:ashutoshsalunke@proton.me?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  // ---------- Animated Stat Counters ----------
+  const statNums = document.querySelectorAll('.stat-num[data-count]');
+  if (statNums.length && 'IntersectionObserver' in window) {
+    const countObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateCount(entry.target);
+          countObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
 
-  window.location.href = mailto;
-  formNote.textContent = 'Opening your email client…';
+    statNums.forEach(el => countObserver.observe(el));
+  }
+
+  function animateCount(el) {
+    const target = parseInt(el.getAttribute('data-count'), 10) || 0;
+    const duration = 1200;
+    const startTime = performance.now();
+
+    function tick(now) {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      el.textContent = Math.round(eased * target);
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        el.textContent = target;
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // ---------- Smooth Scroll for in-page anchors ----------
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      const targetId = link.getAttribute('href');
+      if (targetId.length > 1) {
+        const targetEl = document.querySelector(targetId);
+        if (targetEl) {
+          e.preventDefault();
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    });
+  });
+
+  // ---------- Contact Form (Formspree) ----------
+  // 1. Go to https://formspree.io and sign up free with ashutoshsalunke@proton.me
+  // 2. Create a new form, it gives you an endpoint like https://formspree.io/f/xxxxxxxx
+  // 3. Replace FORMSPREE_ENDPOINT below with that URL
+  // 4. Formspree will send a confirmation email the first time — click the link to activate it
+  const FORMSPREE_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID';
+
+  const contactForm = document.getElementById('contactForm');
+  const formNote = document.getElementById('formNote');
+
+  if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const submitBtn = contactForm.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn.textContent;
+
+      // Basic guard so the endpoint isn't left unconfigured silently
+      if (FORMSPREE_ENDPOINT.includes('YOUR_FORM_ID')) {
+        formNote.textContent = 'Form isn\'t connected yet — add your Formspree endpoint in script.js.';
+        formNote.classList.add('form-note-error');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+      formNote.textContent = '';
+      formNote.classList.remove('form-note-error', 'form-note-success');
+
+      try {
+        const formData = new FormData(contactForm);
+        const response = await fetch(FORMSPREE_ENDPOINT, {
+          method: 'POST',
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (response.ok) {
+          formNote.textContent = 'Thanks for reaching out — I\'ll get back to you soon!';
+          formNote.classList.add('form-note-success');
+          contactForm.reset();
+        } else {
+          const data = await response.json().catch(() => null);
+          const errMsg = data && data.errors
+            ? data.errors.map(err => err.message).join(', ')
+            : 'Something went wrong. Please try emailing me directly instead.';
+          formNote.textContent = errMsg;
+          formNote.classList.add('form-note-error');
+        }
+      } catch (err) {
+        formNote.textContent = 'Network error — please try emailing me directly instead.';
+        formNote.classList.add('form-note-error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalBtnText;
+      }
+    });
+  }
+
 });
