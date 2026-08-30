@@ -282,6 +282,17 @@ ul{list-style:none;}
   content:'▸'; position:absolute; left:0; color:var(--accent); font-size:0.8rem;
 }
 
+.timeline-project{ margin-top:24px; }
+.timeline-project:first-of-type{ margin-top:16px; }
+.timeline-project-title{
+  font-family:var(--font-display); font-weight:600; font-size:1rem;
+  color:var(--text); margin-bottom:3px;
+}
+.timeline-project-meta{
+  font-family:var(--font-mono); font-size:0.74rem; color:var(--text-faint);
+  margin-bottom:11px; letter-spacing:0.01em;
+}
+
 /* ============ CREDENTIALS ============ */
 .credentials-head{ display:flex; justify-content:space-between; align-items:flex-end; }
 .credentials-sub{
